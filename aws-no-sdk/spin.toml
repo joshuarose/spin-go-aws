@@ -6,13 +6,24 @@ version = "0.1.0"
 authors = ["Josh Rose <joshrose@hey.com>"]
 description = ""
 
+[variables]
+aws_access_key_id = { required = true }
+aws_secret_access_key = { required = true }
+aws_session_token = { required = true }
+aws_default_region = { required = true }
+
 [[trigger.http]]
 route = "/..."
 component = "aws-no-sdk"
 
 [component.aws-no-sdk]
 source = "main.wasm"
-allowed_outbound_hosts = []
+allowed_outbound_hosts = ["https://s3.{{aws_default_region}}.amazonaws.com"]
+[component.aws-no-sdk.variables]
+aws_access_key_id = "{{aws_access_key_id}}"
+aws_secret_access_key = "{{aws_secret_access_key}}"
+aws_session_token = "{{aws_session_token}}"
+aws_default_region = "{{aws_default_region}}"
 [component.aws-no-sdk.build]
 command = "tinygo build -target=wasi -gc=leaking -no-debug -o main.wasm main.go"
 watch = ["**/*.go", "go.mod"]
